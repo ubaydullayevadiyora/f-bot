@@ -1,0 +1,13 @@
+{
+  "bot": {
+    "token": "8416685956:AAHx-1rob6YBMHIc8524iEif7IzuByPbelU"
+  },
+  "db": {
+    "username": "postgres",
+    "password": "1234",
+    "database": "finance-bot-db",
+    "host": "localhost",
+    "port": 5432,
+    "dialect": "postgres"
+  }
+}
