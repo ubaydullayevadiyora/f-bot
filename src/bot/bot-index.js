@@ -8,7 +8,6 @@ const sequelize = require("../../index");
 
 const bot = new Bot(config.get("bot.token"));
 
-// memory session (users event)
 const incomeFlows = {};
 const expenseFlows = {};
 
@@ -29,7 +28,6 @@ const mainKeyboard = new Keyboard()
     .text("Xarajat qo'shish").row()
     .text("Hisobot");
 
-// START COMMAND
 bot.command("start", async (ctx) => {
     const telegram_id = ctx.from.id;
     const username = ctx.from.username || "";
@@ -47,7 +45,6 @@ bot.command("start", async (ctx) => {
     );
 });
 
-// BALANS
 bot.hears("Balans", async (ctx) => {
     const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
     if (!user) return ctx.reply("Avval /start buyrug'ini bosing.");
@@ -63,7 +60,6 @@ bot.hears("Balans", async (ctx) => {
     );
 });
 
-// DAROMAD QO'SHISH
 bot.hears("Daromad qo'shish", async (ctx) => {
     const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
     if (!user) return ctx.reply("Avval /start buyrug'ini bosing.");
@@ -72,7 +68,6 @@ bot.hears("Daromad qo'shish", async (ctx) => {
     await ctx.reply("Daromad manbasini kiriting:");
 });
 
-// XARAJAT QO'SHISH
 bot.hears("Xarajat qo'shish", async (ctx) => {
     const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
     if (!user) return ctx.reply("Avval /start buyrug'ini bosing.");
@@ -81,17 +76,15 @@ bot.hears("Xarajat qo'shish", async (ctx) => {
     await ctx.reply("Xarajat nomini kiriting:");
 });
 
-// HISOBOT
 bot.hears("Hisobot", async (ctx) => {
     const reportKeyboard = new Keyboard()
         .text("Joriy hafta").text("Avvalgi hafta").row()
         .text("Joriy oy").text("Avvalgi oy").row()
-        .text("Back to Main Menu"); // asosiy menyuga qaytish tugmasi
+        .text("Back to Main Menu");
 
     await ctx.reply("Qaysi davr hisobotini ko'rmoqchisiz?", { reply_markup: reportKeyboard });
 });
 
-// REPORT LOGIC
 bot.hears(/Joriy hafta|Avvalgi hafta|Joriy oy|Avvalgi oy/, async (ctx) => {
     const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
     if (!user) return ctx.reply("Avval /start buyrug'ini bosing.");
@@ -129,11 +122,11 @@ bot.hears(/Joriy hafta|Avvalgi hafta|Joriy oy|Avvalgi oy/, async (ctx) => {
         `💰 Daromad: ${totalIncome.toLocaleString('uz-UZ')} so'm\n` +
         `💸 Xarajat: ${totalExpense.toLocaleString('uz-UZ')} so'm\n` +
         `🟢 Sof balans: ${(totalIncome - totalExpense).toLocaleString('uz-UZ')} so'm`,
-        { reply_markup: mainKeyboard } // hisobotdan keyin asosiy menyuga qaytadi
+        { reply_markup: mainKeyboard }
     );
 });
 
-// Back to Main Menu button handler
+
 bot.hears("Back to Main Menu", async (ctx) => {
     await ctx.reply("Asosiy menyu:", { reply_markup: mainKeyboard });
 });
@@ -151,7 +144,7 @@ bot.on("message", async (ctx) => {
     const user = await User.findOne({ where: { telegram_id: userId } });
     if (!user) return;
 
-    // Daromad qo'shish flow
+    // Daromad flow
     if (incomeFlows[userId]) {
         const flow = incomeFlows[userId];
         if (flow.step === "source") {
@@ -168,7 +161,7 @@ bot.on("message", async (ctx) => {
         }
     }
 
-    // Xarajat qo'shish flow
+    // Xarajat flow
     if (expenseFlows[userId]) {
         const flow = expenseFlows[userId];
         if (flow.step === "title") {
@@ -192,7 +185,6 @@ bot.on("message", async (ctx) => {
     }
 });
 
-// GLOBAL ERROR HANDLER
 bot.catch((err) => {
     console.error("Error in bot:", err);
 });
